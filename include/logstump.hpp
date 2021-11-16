@@ -31,7 +31,6 @@ SOFTWARE.
 #include <string>
 #include <vector>
 
-using namespace std;
 namespace stump
 {
     /**
@@ -54,7 +53,7 @@ namespace stump
      * */
     struct Logstump
     {
-        vector<ostream *> files;
+        std::vector<std::ostream *> files;
         LogMode logMode;
         bool colorCoding;
         char const *colorCodes[5];
@@ -68,7 +67,7 @@ namespace stump
     * param colorCoding determins if the output shall be color coded (applies to all outputs, both files and console)
     * param logMode determins the logging level
     * */
-    void initLogstump(vector<string *> logfiles, bool logToConsole, bool colorCoding, LogMode logMode);
+    void initLogstump(std::vector<std::string *> logfiles, bool logToConsole, bool colorCoding, LogMode logMode);
     /**
      * This method can be used to change the color codes for the color coding of the messages.
      * param error contains the color code for the error message
@@ -106,7 +105,7 @@ namespace stump
      * param args is a list of printf style arguments to be formatted into the message (not the prefix)
      * */
     template <class... Args>
-    void log(string prefix, string msg, Args &&...args);
+    void log(std::string prefix, std::string msg, Args &&...args);
     /**
      * This function will call log() with the error prefix if the logging level is equal or greater than ERROR.
      * If color coding is enabled, the error code will be printed before the prefix.
@@ -114,7 +113,7 @@ namespace stump
      * param args is a list of printf style arguments to be formatted into the message (not the prefix)
      * */
     template <class... Args>
-    void error(string msg, Args &&...args);
+    void error(std::string msg, Args &&...args);
     /**
      * This function will call log() with the warn prefix if the logging level is equal or greater than WARN.
      * If color coding is enabled, the warn code will be printed before the prefix.
@@ -122,7 +121,7 @@ namespace stump
      * param args is a list of printf style arguments to be formatted into the message (not the prefix)
      * */
     template <class... Args>
-    void warn(string msg, Args &&...args);
+    void warn(std::string msg, Args &&...args);
     /**
      * This function will call log() with the info prefix if the logging level is equal or greater than INFO.
      * If color coding is enabled, the info code will be printed before the prefix.
@@ -130,7 +129,7 @@ namespace stump
      * param args is a list of printf style arguments to be formatted into the message (not the prefix)
      * */
     template <class... Args>
-    void info(string msg, Args &&...args);
+    void info(std::string msg, Args &&...args);
     /**
      * This function will call log() with the debug prefix if the logging level is equal or greater than DEBUG.
      * If color coding is enabled, the debug code will be printed before the prefix.
@@ -138,21 +137,21 @@ namespace stump
      * param args is a list of printf style arguments to be formatted into the message (not the prefix)
      * */
     template <class... Args>
-    void debug(string msg, Args &&...args);
+    void debug(std::string msg, Args &&...args);
 
-    void initLogstump(vector<string *> logfiles, bool logToConsole, bool colorCoding, LogMode logMode)
+    void initLogstump(std::vector<std::string *> logfiles, bool logToConsole, bool colorCoding, LogMode logMode)
     {
 
-        for (string *path : logfiles)
+        for (std::string *path : logfiles)
         {
-            ofstream *file = new ofstream();
+            std::ofstream *file = new std::ofstream();
             file->open(*path);
             logstump.files.push_back(file);
         }
 
         if (logToConsole)
         {
-            logstump.files.push_back(&cout);
+            logstump.files.push_back(&std::cout);
         }
 
         logstump.colorCoding = colorCoding;
@@ -165,11 +164,11 @@ namespace stump
 
     void closeLogstump()
     {
-        for (ostream *file : logstump.files)
+        for (std::ostream *file : logstump.files)
         {
-            if (file != &cout)
+            if (file != &std::cout)
             {
-                ((ofstream*)file)->close();
+                ((std::ofstream*)file)->close();
             }
         }
     }
@@ -207,59 +206,59 @@ namespace stump
 #pragma clang diagnostic ignored "-Wformat-security"
 
     template <class... Args>
-    void log(string prefix, string msg, Args &&...args)
+    void log(std::string prefix, std::string msg, Args &&...args)
     {
         size_t formattedSize = snprintf(NULL, 0, msg.c_str(), args...);
         char *buffer = (char *)malloc(formattedSize);
         snprintf(buffer, formattedSize, msg.c_str(), args...);
 
-        for (ostream *file : logstump.files)
+        for (std::ostream *file : logstump.files)
         {
-            *file << prefix << buffer << (logstump.colorCoding ? logstump.colorCodes[4] : "") << endl;
+            *file << prefix << buffer << (logstump.colorCoding ? logstump.colorCodes[4] : "") << std::endl;
         }
     }
 
 #pragma clang diagnostic push
 
     template <class... Args>
-    void error(string msg, Args &&...args)
+    void error(std::string msg, Args &&...args)
     {
         if (logstump.logMode >= ERROR)
         {
-            stringstream prefix;
+            std::stringstream prefix;
             prefix << (logstump.colorCoding ? logstump.colorCodes[0] : "") << "Error: ";
             log(prefix.str(), msg, args...);
         }
     }
 
     template <class... Args>
-    void warn(string msg, Args &&...args)
+    void warn(std::string msg, Args &&...args)
     {
         if (logstump.logMode >= WARN)
         {
-            stringstream prefix;
+            std::stringstream prefix;
             prefix << (logstump.colorCoding ? logstump.colorCodes[1] : "") << "Warning: ";
             log(prefix.str(), msg, args...);
         }
     }
 
     template <class... Args>
-    void info(string msg, Args &&...args)
+    void info(std::string msg, Args &&...args)
     {
         if (logstump.logMode >= INFO)
         {
-            stringstream prefix;
+            std::stringstream prefix;
             prefix << (logstump.colorCoding ? logstump.colorCodes[2] : "") << "Info: ";
             log(prefix.str(), msg, args...);
         }
     }
 
     template <class... Args>
-    void debug(string msg, Args &&...args)
+    void debug(std::string msg, Args &&...args)
     {
         if (logstump.logMode >= DEBUG)
         {
-            stringstream prefix;
+            std::stringstream prefix;
             prefix << (logstump.colorCoding ? logstump.colorCodes[3] : "") << "Debug: ";
             log(prefix.str(), msg, args...);
         }
