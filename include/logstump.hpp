@@ -169,8 +169,10 @@ namespace stump
             if (file != &std::cout)
             {
                 ((std::ofstream*)file)->close();
+                delete file;
             }
         }
+        logstump.files.clear();
     }
 
     void setColorCodes(char const *error, char const *warn, char const *info, char const *debug, char const *reset)
@@ -216,6 +218,7 @@ namespace stump
         {
             *file << prefix << buffer << (logstump.colorCoding ? logstump.colorCodes[4] : "") << std::endl;
         }
+        free(buffer);
     }
 
 #pragma clang diagnostic push

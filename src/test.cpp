@@ -60,7 +60,7 @@ void testTogglingConsoleLog()
 void testColorCoding()
 {
     vector<string*> logfiles = { };
-    initLogstump(logfiles, false, true, DEBUG);
+    initLogstump(logfiles, true, true, DEBUG);
 
     error("This should be red.");
     warn("This should be yellow.");
@@ -73,7 +73,7 @@ void testColorCoding()
 void testLogMode()
 {
     vector<string*> logfiles = { };
-    initLogstump(logfiles, false, true, ERROR);
+    initLogstump(logfiles, true, true, ERROR);
 
     error("This should be printed.");
     warn("This should not be printed.");
